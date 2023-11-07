@@ -1,0 +1,59 @@
+---
+title: "Assessment4"
+format: html
+editor: visual
+---
+
+## Where did birds hatch?
+
+```{r}
+library(tidyverse)
+
+# Generate sample data
+# Sightings of Black Oystercatcher chicks at Santa Cruz beaches
+beaches <- c("Cowell's", "Steamer Lane", "Natural Bridges", "Mitchell's", "Main")
+# blue, green, black, white, yellow
+band_colors <- c("B", "G", "K", "W", "Y") 
+# Surveys took place weekly in the summer of 2023
+surveys <- seq(as.Date("2023-06-01"), as.Date("2023-08-31"), by = 7)
+
+# Setting the "seed" forces randomized functions (like sample()) to generate
+# the same output
+set.seed(1538)
+# 3 band colors identify a bird. We want 12 birds.
+birds <- paste0(
+  sample(band_colors, 25, replace = TRUE),
+  sample(band_colors, 25, replace = TRUE),
+  sample(band_colors, 25, replace = TRUE)
+) %>% 
+  unique() %>%
+  head(12)
+bloy_chicks <- tibble(
+  # Randomly generate survey data
+  beach = sample(beaches, size = 100, replace = TRUE),
+  bird = sample(birds, size = 100, replace = TRUE),
+  survey = sample(surveys, size = 100, replace = TRUE)
+) %>% 
+  # Remove duplicates (see ?distinct)
+  distinct() %>% 
+  # Sort by survey date and location
+  arrange(survey, beach)
+```
+
+**Q1** We\'re randomly generating data, but we\'re all going to end up with the same data frames. How is that happening?
+
+A1: Because you set the seed. This effectively tells R where to start in its "long list" of random numbers from which it generates numbers. This is a seed (/anchor/reference) point from which random numbers can continue to be generated.
+
+**Q2** Explain in plain language what this part does. Your answer should be one or two sentences
+
+```{r}
+birds <- paste0(
+  sample(band_colors, 25, replace = TRUE),
+  sample(band_colors, 25, replace = TRUE),
+  sample(band_colors, 25, replace = TRUE)
+) %>% 
+  unique() %>%
+  head(12)
+```
+
+A2: The code above creates a list called `birds` that is populated with three randomly sampled vectors 3 times from the `band_colors` list created earlier. Each iteration of `sample` is set to run 25 times, and values can be repeated. Each iteration of `sample` is combined by `paste0` such that we have a single column with 3 letter `band_color` codes. Finally we select only for unique values 3 letter samples, and output the first 12 items of that vector.
